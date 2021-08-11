@@ -1,0 +1,3 @@
+lib/* usr/share/perl6/debian-sources/raku-meta6-depends/lib
+t/* usr/share/perl6/debian-sources/raku-meta6-depends/t
+META* usr/share/perl6/debian-sources/raku-meta6-depends

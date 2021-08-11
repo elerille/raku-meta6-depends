@@ -1,0 +1,8 @@
+version=4
+
+# GitHub hosted projects
+opts="filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%raku-meta6-depends-$1.tar.gz%" \
+   https://github.com/elerille/raku-meta6-depends/tags \
+   (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
+
+

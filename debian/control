@@ -1,0 +1,15 @@
+Source: raku-meta6-depends
+Maintainer: Élerille <elerille+debian@thran.io>
+Section: interpreters
+Priority: optional
+Build-Depends: debhelper-compat (= 13), dh-perl6, perl6-tap-harness, raku-json-fast, raku-meta6, raku-test-meta
+Standards-Version: 4.5.1
+Homepage: https://github.com/elerille/raku-meta6-depends
+Rules-Requires-Root: no
+
+Package: raku-meta6-depends
+Architecture: all
+Depends: rakudo, ${misc:Depends}, raku-json-fast, raku-meta6
+Description: Get dependency from a META file
+ Library for get direct dependency of a raku module from a META6.json file.
+ Require META6 module for parsing.
