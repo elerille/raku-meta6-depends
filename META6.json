@@ -1,0 +1,24 @@
+{
+  "name": "META6::Depends",
+  "description": "Get dependency from a META file",
+  "version": "0.0.1",
+  "perl": "6.*",
+  "authors": [
+    "Élerille"
+  ],
+  "auth": "github:elerille",
+  "depends": [
+    "JSON::Fast",
+    "META6"
+  ],
+  "build-depends": [],
+  "test-depends": [
+    "Test::META"
+  ],
+  "provides": {
+    "META6::Depends": "lib/META6/Depends.pm6"
+  },
+  "resources": [],
+  "license": "GPL-3.0-or-later",
+  "source-url": "https://github.com/elerille/raku-meta6-depends.git"
+}
