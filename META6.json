@@ -1,7 +1,7 @@
 {
   "name": "META6::Depends",
   "description": "Get dependency from a META file",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "perl": "6.*",
   "authors": [
     "Élerille"
@@ -16,7 +16,7 @@
     "Test::META"
   ],
   "provides": {
-    "META6::Depends": "lib/META6/Depends.pm6"
+    "META6::Depends": "lib/META6/Depends.rakumod"
   },
   "resources": [],
   "license": "GPL-3.0-or-later",
