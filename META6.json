@@ -1,7 +1,7 @@
 {
   "name": "META6::Depends",
   "description": "Get dependency from a META file",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "perl": "6.*",
   "authors": [
     "Élerille"
