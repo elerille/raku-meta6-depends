@@ -16,7 +16,7 @@
     "Test::META"
   ],
   "provides": {
-    "META6::Depends": "lib/META6/Depends.pm6"
+    "META6::Depends": "lib/META6/Depends.rakumod"
   },
   "resources": [],
   "license": "GPL-3.0-or-later",
