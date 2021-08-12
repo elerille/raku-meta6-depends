@@ -63,8 +63,8 @@ indir $?FILE.IO.parent, {
         if %skip{$module}:exists {
             skip $module ~ ' ' ~ %skip{$module}
         } else {
-            lives-ok { depends($meta) }, $module;
-            depends($meta);
+            lives-ok { META6::Depends.from-meta($meta) }, $module;
+            META6::Depends.from-meta($meta);
         }
     }
 

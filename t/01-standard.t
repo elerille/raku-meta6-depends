@@ -19,6 +19,8 @@ use Test;
 use META6::Depends;
 use META6;
 
+plan 32;
+
 my %hash = test-depends => "test",
            build-depends => "build",
            depends => "runtime";
@@ -28,8 +30,8 @@ for @a {
     for %hash.sort -> (:$key, :$value) {
         my META6 $meta .= new: |($key => [$_]);
         my %result;
-        %result{$value}<requires> = [META6::Depends::Depends.new: name => $_];
-        my $got = depends($meta);
+        %result{$value}<requires> = [META6::Depends.new: name => $_];
+        my $got = META6::Depends.from-meta($meta);
         is-deeply $got, %result, "$_ on $key";
     }
 }
@@ -37,75 +39,86 @@ for @a {
     for %hash.sort -> (:$key, :$value) {
         my META6 $meta .= new: |($key => @a);
         my %result;
-        %result{$value}<requires> = @a.map({ META6::Depends::Depends.new: name => $_ }).Array;
-        is-deeply depends($meta), %result, $key.tc ~ " with " ~ +@a ~ " Str";
+        %result{$value}<requires> = @a.map({ META6::Depends.new: name => $_ }).Array;
+        is-deeply META6::Depends.from-meta($meta), %result, $key.tc ~ " with " ~ +@a ~ " Str";
     }
 }
 {
     my META6 $meta .= new: depends => ["zef", ["JSON::Fast", "JSON::Tiny"]];
     my %result;
     %result<runtime><requires> = [
-        META6::Depends::Depends.new(:name<zef>),
-        [META6::Depends::Depends.new(:name<JSON::Fast>), META6::Depends::Depends.new(:name<JSON::Tiny>)].Seq
+        META6::Depends.new(:name<zef>),
+        [META6::Depends.new(:name<JSON::Fast>), META6::Depends.new(:name<JSON::Tiny>)].Seq
     ];
-    is-deeply depends($meta), %result, "Simple with alternative";
+    is-deeply META6::Depends.from-meta($meta), %result, "Simple with alternative";
 }
 {
     my META6 $meta .= new: depends => ["Cro::HTTP:ver<0.8.3>"];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<Cro::HTTP>, :ver<0.8.3>),];
-    is-deeply depends($meta), %result, "Cro::HTTP:ver<0.8.3>";
+    %result<runtime><requires> = [META6::Depends.new(:name<Cro::HTTP>, :ver<0.8.3>),];
+    is-deeply META6::Depends.from-meta($meta), %result, "Cro::HTTP:ver<0.8.3>";
 }
 {
     my META6 $meta .= new: depends => ["Cro::HTTP:ver<0.8.3+>"];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<Cro::HTTP>, :ver(v0.8.3, '*')),];
-    is-deeply depends($meta), %result, "Cro::HTTP:ver<0.8.3+>";
+    %result<runtime><requires> = [META6::Depends.new(:name<Cro::HTTP>, :ver(v0.8.3), :cmp('>=')),];
+    is-deeply META6::Depends.from-meta($meta), %result, "Cro::HTTP:ver<0.8.3+>";
 }
 for <Cro::HTTP:ver<0.8.3+>:api<1> Cro::HTTP:api<1>:ver<0.8.3+> Cro::HTTP:ver<0.8.3+>:1api Cro::HTTP:1api:ver<0.8.3+>>
 {
     my META6 $meta .= new: depends => [$_];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<Cro::HTTP>, :ver(v0.8.3, '*'), :1api),];
-    is-deeply depends($meta), %result, $_;
+    %result<runtime><requires> = [META6::Depends.new(:name<Cro::HTTP>, :ver(v0.8.3), :cmp('>='), :1api),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
 }
 for <IRC::Log::Colabti:ver<0.0.30>:auth<cpan:ELIZABETH> IRC::Log::Colabti:auth<cpan:ELIZABETH>:ver<0.0.30>>
 {
     my META6 $meta .= new: depends => [$_];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<IRC::Log::Colabti>, :ver<0.0.30>, :auth<cpan:ELIZABETH>),];
-    is-deeply depends($meta), %result, $_;
+    %result<runtime><requires> = [META6::Depends.new(:name<IRC::Log::Colabti>, :ver<0.0.30>, :auth<cpan:ELIZABETH>),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
 }
-for ("CPAN::Uploader::Tiny:ver(v0.0.4 .. *)",)
+for ("CPAN::Uploader::Tiny:ver(v0.0.4 .. *)","CPAN::Uploader::Tiny:ver(v0.0.4..*)")
 {
     my META6 $meta .= new: depends => [$_];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<CPAN::Uploader::Tiny>, :ver(v0.0.4, '*')),];
-    is-deeply depends($meta), %result, $_;
+    %result<runtime><requires> = [META6::Depends.new(:name<CPAN::Uploader::Tiny>, :ver(v0.0.4), :cmp('>=')),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
+}
+for ("CPAN::Uploader::Tiny:ver(* .. v0.0.4)", "CPAN::Uploader::Tiny:ver(*..v0.0.4)")
+{
+    my META6 $meta .= new: depends => [$_];
+    my %result;
+    %result<runtime><requires> = [META6::Depends.new(:name<CPAN::Uploader::Tiny>, :ver(v0.0.4), :cmp('<<')),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
+}
+for ("CPAN::Uploader::Tiny:ver(* .. *)", "CPAN::Uploader::Tiny:ver(*..*)", "CPAN::Uploader::Tiny:ver(*)")
+{
+    my META6 $meta .= new: depends => [$_];
+    my %result;
+    %result<runtime><requires> = [META6::Depends.new(:name<CPAN::Uploader::Tiny>)];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
 }
 for ("ogg:from<native>",)
 {
     my META6 $meta .= new: depends => [$_];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<ogg>, :from<native>),];
-    is-deeply depends($meta), %result, $_;
+    %result<runtime><requires> = [META6::Depends.new(:name<ogg>, :from<native>),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
 }
 for ("dot:from<bin>",)
 {
     my META6 $meta .= new: depends => [$_];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<dot>, :from<bin>),];
-    is-deeply depends($meta), %result, $_;
+    %result<runtime><requires> = [META6::Depends.new(:name<dot>, :from<bin>),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
 }
 for <License::Software:ver<0.3.*> License::Software:ver<0.3.*.*>>
 {
     my META6 $meta .= new: depends => [$_];
     my %result;
-    %result<runtime><requires> = [META6::Depends::Depends.new(:name<License::Software>, :ver(v0.3, v0.4)),];
-    is-deeply depends($meta), %result, $_;
+    %result<runtime><requires> = [META6::Depends.new(:name<License::Software>, :ver(v0.3), :cmp('=')),];
+    is-deeply META6::Depends.from-meta($meta), %result, $_;
 }
-
-
-say depends(META6.new: depends => ["Dist::Helper:ver<0.19.0>:2api"]);
 
 done-testing;
